@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@import "leaflet/dist/leaflet.css";
+
+/* Leaflet overrides for clean look */
+.leaflet-control-container .leaflet-routing-container,
+.leaflet-control-container .leaflet-control-attribution {
+  display: none !important;
+}
+
+.custom-marker-icon {
+  background: transparent;
+  border: none;
+}
