@@ -5,6 +5,11 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 @import "leaflet/dist/leaflet.css";
 
 /* Leaflet overrides for clean look */

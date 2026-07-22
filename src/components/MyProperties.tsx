@@ -108,18 +108,11 @@ export const MyProperties: React.FC<MyPropertiesProps> = ({
   });
 
   return (
-    <div className="absolute inset-0 z-[1000] bg-gray-50 flex flex-col pt-20 pb-8 px-4 md:p-8 overflow-y-auto">
+    <div className="absolute inset-0 z-40 bg-gray-50 flex flex-col pt-20 pb-8 px-4 md:p-8 overflow-y-auto">
       <div className="max-w-6xl mx-auto w-full">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full md:w-auto gap-4">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setActiveTab('dashboard')}
-                className="md:hidden bg-white p-2.5 rounded-lg shadow-sm border border-gray-200 text-gray-600 hover:text-blue-600 transition-colors"
-                title="Voltar"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
+            <div className="flex items-center gap-3 md:pl-0 pl-16">
               <h1 className="text-3xl font-bold text-gray-900">Minhas Casas</h1>
             </div>
             

@@ -247,8 +247,6 @@ export default function App() {
           const settings = JSON.parse(settingsProp.description);
           if (settings.activePoiTypes)
             setActivePoiTypes(settings.activePoiTypes);
-          if (typeof settings.showPOIs !== "undefined")
-            setShowPOIs(settings.showPOIs);
           if (typeof settings.showSoldProperties !== "undefined")
             setShowSoldProperties(settings.showSoldProperties);
         } catch (e) {}
@@ -296,7 +294,15 @@ export default function App() {
   };
 
   // Settings state
-  const [showPOIs, setShowPOIs] = useState(true);
+  const [showPOIs, setShowPOIs] = useState(() => {
+    const saved = localStorage.getItem("showPOIs");
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("showPOIs", JSON.stringify(showPOIs));
+  }, [showPOIs]);
+
   const [showSoldProperties, setShowSoldProperties] = useState(() => {
     const saved = localStorage.getItem("showSoldProperties");
     return saved !== null ? JSON.parse(saved) : false;
@@ -573,7 +579,7 @@ export default function App() {
       <main className="flex-1 relative h-full">
         {/* Mobile Menu Button */}
         <button
-          className={`md:hidden absolute top-4 left-4 z-30 bg-white p-2.5 rounded-lg shadow-md border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors ${showLoginModal ? "hidden" : ""}`}
+          className={`md:hidden absolute top-4 left-4 z-50 bg-white p-2.5 rounded-lg shadow-md border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors ${showLoginModal ? "hidden" : ""}`}
           onClick={() => setIsSidebarOpen(true)}
         >
           <Menu className="w-6 h-6" />

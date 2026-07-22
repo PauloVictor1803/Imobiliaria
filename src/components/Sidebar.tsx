@@ -29,13 +29,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Overlay for mobile */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+          className="fixed inset-0 bg-black/50 z-[55] md:hidden" 
           onClick={onClose}
         />
       )}
       
       {/* Sidebar */}
-      <aside className={`fixed md:relative top-0 right-0 md:left-0 md:right-auto w-64 bg-white h-screen border-l md:border-l-0 md:border-r border-gray-200 flex flex-col pt-6 pb-6 shadow-sm z-50 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}>
+      <aside className={`fixed md:relative top-0 right-0 md:left-0 md:right-auto w-64 bg-white h-screen border-l md:border-l-0 md:border-r border-gray-200 flex flex-col pt-6 pb-6 shadow-sm z-[60] transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}>
         
         <div className="absolute top-4 left-4 md:hidden">
           <button onClick={onClose} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full">
@@ -104,7 +104,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
         
         <div className="px-4 space-y-4 mt-auto pt-6">
-          {isAdmin && (
           <button
             onClick={() => { setActiveTab(activeTab === 'settings' ? 'dashboard' : 'settings'); onClose?.(); }}
             className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
@@ -116,7 +115,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Settings className="w-5 h-5 mr-3" />
             Configurações
           </button>
-          )}
           
           {/* Mobile Login/Logout button */}
           <div className="md:hidden border-t border-gray-100 pt-4 mt-2">

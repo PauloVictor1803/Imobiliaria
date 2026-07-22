@@ -152,23 +152,25 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
         <div className="flex-1 overflow-y-auto pr-2">
           {/* Hide Sold Toggle */}
-          <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
-            <label
-              className="text-sm font-semibold text-gray-800 cursor-pointer select-none"
-              htmlFor="toggle-hide-sold"
-            >
-              Mostrar imóveis vendidos ao cliente?
-            </label>
-            <div
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${showSoldProperties ? "bg-blue-600" : "bg-gray-300"}`}
-              onClick={() => setShowSoldProperties(!showSoldProperties)}
-              id="toggle-hide-sold"
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${showSoldProperties ? "translate-x-6" : "translate-x-1"}`}
-              />
+          {isAdmin && (
+            <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
+              <label
+                className="text-sm font-semibold text-gray-800 cursor-pointer select-none"
+                htmlFor="toggle-hide-sold"
+              >
+                Mostrar imóveis vendidos ao cliente?
+              </label>
+              <div
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${showSoldProperties ? "bg-blue-600" : "bg-gray-300"}`}
+                onClick={() => setShowSoldProperties(!showSoldProperties)}
+                id="toggle-hide-sold"
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${showSoldProperties ? "translate-x-6" : "translate-x-1"}`}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Global Toggle */}
           <div className="flex items-center justify-between mb-8">
@@ -189,7 +191,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </div>
           </div>
 
-          {showPOIs && (
+          {showPOIs && isAdmin && (
             <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                 Filtros de Pontos de Interesse
