@@ -33,7 +33,9 @@ import {
   UtensilsCrossed,
   Shield,
   Goal,
+  Youtube,
 } from "lucide-react";
+import { isYouTubeUrl, getYouTubeThumbnail, getYouTubeId } from "../lib/youtube";
 import React, { useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { Property, POIType } from "../types";
@@ -181,22 +183,55 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
     >
       <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col w-full scroll-smooth">
         <div className="relative group shrink-0">
-          <img
-            src={
-              property.images && property.images.length > 0
-                ? property.images[currentImageIndex]
-                : property.image
+          {(() => {
+            const currentImg = property.images && property.images.length > 0
+              ? property.images[currentImageIndex]
+              : property.image;
+            const isYT = isYouTubeUrl(currentImg);
+            const ytId = getYouTubeId(currentImg);
+            
+            if (isYT && ytId) {
+              return (
+                <div className={`w-full relative transition-all duration-500 ${isExpanded ? "h-[50vh] min-h-[400px] bg-black" : "h-56 rounded-b-3xl overflow-hidden"} ${property.isSold ? "opacity-50 grayscale" : ""}`}>
+                  {isExpanded ? (
+                    <iframe 
+                      src={`https://www.youtube.com/embed/${ytId}?autoplay=1`} 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowFullScreen 
+                      className="w-full h-full border-0"
+                    />
+                  ) : (
+                    <div 
+                      className="w-full h-full relative cursor-pointer group/yt"
+                      onClick={() => setIsExpanded(true)}
+                    >
+                      <img src={getYouTubeThumbnail(currentImg)} alt={property.title} className="w-full h-full object-cover group-hover/yt:opacity-90 transition-opacity" />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="bg-white/90 p-3 rounded-full shadow-lg group-hover/yt:scale-110 transition-transform">
+                          <Youtube className="w-10 h-10 text-red-600" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
             }
-            alt={property.title}
-            onClick={() => {
-              if (isExpanded && property.images && property.images.length > 1) {
-                setCurrentImageIndex((prev) =>
-                  prev === property.images!.length - 1 ? 0 : prev + 1,
-                );
-              }
-            }}
-            className={`w-full transition-all duration-500 ${isExpanded ? "h-[50vh] min-h-[400px] object-contain bg-gray-200 cursor-pointer" : "h-56 object-cover rounded-b-3xl"} ${property.isSold ? "opacity-50 grayscale" : ""}`}
-          />
+            
+            return (
+              <img
+                src={currentImg}
+                alt={property.title}
+                onClick={() => {
+                  if (isExpanded && property.images && property.images.length > 1) {
+                    setCurrentImageIndex((prev) =>
+                      prev === property.images!.length - 1 ? 0 : prev + 1,
+                    );
+                  }
+                }}
+                className={`w-full transition-all duration-500 ${isExpanded ? "h-[50vh] min-h-[400px] object-contain bg-gray-200 cursor-pointer" : "h-56 object-cover rounded-b-3xl"} ${property.isSold ? "opacity-50 grayscale" : ""}`}
+              />
+            );
+          })()}
           {property.isSold && (
             <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
               <span className="bg-red-600 text-white font-black text-3xl px-8 py-3 rounded-xl tracking-widest shadow-2xl border-4 border-white">

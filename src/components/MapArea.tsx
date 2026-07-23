@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Property, PointOfInterest } from '../types';
+import { isYouTubeUrl, getYouTubeThumbnail } from '../lib/youtube';
 
 interface MapAreaProps {
   properties: Property[];
@@ -24,7 +25,7 @@ const createCustomIcon = (property: Property, isSelected: boolean) => {
     html: `
       <div class="relative group cursor-pointer" style="width: ${isSelected ? '64px' : '48px'}; height: ${isSelected ? '64px' : '48px'}; transition: all 0.3s ease;">
         <div class="absolute inset-0 bg-white rounded-full shadow-md border-4 ${borderColor} flex items-center justify-center overflow-hidden z-10">
-          <img src="${property.image}" alt="${property.title}" class="w-full h-full object-cover ${isSold ? 'opacity-50 grayscale' : ''}" />
+          <img src="${isYouTubeUrl(property.image) ? getYouTubeThumbnail(property.image) : property.image}" alt="${property.title}" class="w-full h-full object-cover ${isSold ? 'opacity-50 grayscale' : ''}" />
         </div>
         ${isSold ? `<div class="absolute -top-1 -right-4 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full z-20 shadow-sm border border-white">VENDIDO</div>` : ''}
         <div class="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[12px] ${arrowColor}"></div>

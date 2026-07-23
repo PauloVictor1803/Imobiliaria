@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Property, FilterOptions } from '../types';
 import { SearchBar } from './SearchBar';
-import { MapPin, DollarSign, Maximize, TrendingUp, Edit2, BedDouble, Bath, Car, ChevronLeft, ChevronRight, ChefHat, Sofa, TreePine, Plus, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { MapPin, DollarSign, Maximize, TrendingUp, Edit2, BedDouble, Bath, Car, ChevronLeft, ChevronRight, ChefHat, Sofa, TreePine, Plus, ArrowLeft, Eye, EyeOff, Youtube } from 'lucide-react';
+import { isYouTubeUrl, getYouTubeThumbnail } from '../lib/youtube';
 
 
 const PropertyImageSlider: React.FC<{ property: Property, onSelect: () => void }> = ({ property, onSelect }) => {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const images = property.images && property.images.length > 0 ? property.images : [property.image];
+  const currentImg = images[currentIndex] || '';
+  const isYT = isYouTubeUrl(currentImg);
   
   return (
     <div 
@@ -14,10 +17,17 @@ const PropertyImageSlider: React.FC<{ property: Property, onSelect: () => void }
       onClick={onSelect}
     >
       <img 
-        src={images[currentIndex]} 
+        src={isYT ? getYouTubeThumbnail(currentImg) : currentImg} 
         alt={property.title}
         className={`w-full h-full object-cover transition-transform hover:scale-105 duration-500 ${property.isSold ? 'opacity-50 grayscale' : ''}`}
       />
+      {isYT && !property.isSold && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-white/90 p-2 rounded-full shadow-lg">
+            <Youtube className="w-8 h-8 text-red-600" />
+          </div>
+        </div>
+      )}
       {property.isSold && (
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
           <span className="bg-red-600 text-white font-black text-2xl px-6 py-2 rounded-lg tracking-widest shadow-lg border-2 border-white">

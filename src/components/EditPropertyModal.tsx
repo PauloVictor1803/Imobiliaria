@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Property } from '../types';
-import { X, Save, Plus, Trash2, UploadCloud, ImageIcon, MapPin, Search, Loader2 } from 'lucide-react';
+import { X, Save, Plus, Trash2, UploadCloud, ImageIcon, MapPin, Search, Loader2, GripVertical, Youtube } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { isYouTubeUrl, getYouTubeThumbnail } from '../lib/youtube';
 
 // Fix for default marker icon in react-leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -42,6 +43,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
   const [isSaving, setIsSaving] = useState(false);
   const [images, setImages] = useState<string[]>(property.images || (property.image ? [property.image] : []));
   const [isDragging, setIsDragging] = useState(false);
+  const [draggedImageIndex, setDraggedImageIndex] = useState<number | null>(null);
   const [newUrl, setNewUrl] = useState("");
   const [coordinatesInput, setCoordinatesInput] = useState(`${property.lat}, ${property.lng}`);
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -259,6 +261,31 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
   const removeImageField = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
     setImages(newImages);
+  };
+
+  const handleImageDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedImageIndex(index);
+    // Needed for Firefox
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', '');
+  };
+
+  const handleImageDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedImageIndex === null || draggedImageIndex === index) return;
+    
+    const newImages = [...images];
+    const draggedItem = newImages[draggedImageIndex];
+    
+    newImages.splice(draggedImageIndex, 1);
+    newImages.splice(index, 0, draggedItem);
+    
+    setDraggedImageIndex(index);
+    setImages(newImages);
+  };
+
+  const handleImageDragEnd = () => {
+    setDraggedImageIndex(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -634,14 +661,40 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                 </div>
 
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-60 overflow-y-auto pr-1">
-                  {images.map((img, index) => (
-                    <div key={index} className="relative group aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center">
+                  {images.map((img, index) => {
+                    const isYT = isYouTubeUrl(img);
+                    return (
+                    <div 
+                      key={index} 
+                      className={`relative group aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center cursor-move transition-transform ${draggedImageIndex === index ? 'scale-95 opacity-50' : ''}`}
+                      draggable
+                      onDragStart={(e) => handleImageDragStart(e, index)}
+                      onDragOver={(e) => handleImageDragOver(e, index)}
+                      onDragEnd={handleImageDragEnd}
+                    >
                       {img ? (
-                        <img src={img} alt={`Imagem ${index + 1}`} className="w-full h-full object-cover" />
+                        <>
+                          <img src={isYT ? getYouTubeThumbnail(img) : img} alt={`Imagem ${index + 1}`} className="w-full h-full object-cover" />
+                          {isYT && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                              <div className="bg-white/90 p-1.5 rounded-full">
+                                <Youtube className="w-6 h-6 text-red-600" />
+                              </div>
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <ImageIcon className="w-6 h-6 text-gray-400" />
                       )}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      
+                      <div className="absolute top-1 left-1 bg-black/50 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-sm z-10 pointer-events-none">
+                        {index + 1}
+                      </div>
+
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <div className="p-1.5 bg-white text-gray-700 rounded-full shadow-sm cursor-grab active:cursor-grabbing">
+                          <GripVertical className="w-4 h-4" />
+                        </div>
                         <button 
                           type="button"
                           onClick={() => removeImageField(index)}
@@ -652,7 +705,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                         </button>
                       </div>
                     </div>
-                  ))}
+                  )})}
                   {images.length === 0 && (
                     <div className="col-span-full py-4 text-center">
                       <p className="text-xs text-gray-500 italic">Nenhuma imagem adicionada.</p>
