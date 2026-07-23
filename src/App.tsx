@@ -618,7 +618,7 @@ export default function App() {
               filters={filters}
               setFilters={setFilters}
               isAdmin={isAuthenticatedAdmin}
-              className="absolute top-4 left-16 md:left-4 z-30 right-4 md:right-auto md:max-w-md w-auto"
+              className="absolute top-4 left-[4.5rem] md:left-4 z-30 right-4 md:right-auto md:max-w-md w-auto"
             />
           </>
         )}

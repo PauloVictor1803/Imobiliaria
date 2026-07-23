@@ -279,7 +279,7 @@ export const MyProperties: React.FC<MyPropertiesProps> = ({
                   </p>
                   
                   
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4 pb-4 border-b border-gray-100">
+                  <div className="grid grid-cols-3 gap-y-3 gap-x-2 text-sm text-gray-600 mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center" title="Área">
                       <Maximize className="w-4 h-4 mr-1 text-gray-400" />
                       <span>{property.area} m²</span>
@@ -321,27 +321,25 @@ export const MyProperties: React.FC<MyPropertiesProps> = ({
                       </div>
                     )}
                   </div>
-                  
-                  <div className="flex justify-between items-center mt-auto">
-
-                    <div className="flex gap-4 items-end flex-wrap">
+                             <div className="grid grid-cols-2 gap-4 mt-auto pt-4 border-t border-gray-100">
+                    <div className="flex flex-col gap-2">
                       {property.oldPrice && property.oldPrice > property.price && (
-                        <div>
-                          <p className="text-xs text-gray-500 mb-1">Antes</p>
-                          <span className="text-sm font-medium text-gray-500 line-through">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500 font-medium">Antes:</span>
+                          <span className="text-xs font-medium text-gray-400 line-through">
                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.oldPrice)}
                           </span>
                         </div>
                       )}
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Preço Atual</p>
+                        <p className="text-xs text-gray-500 mb-0.5">Preço Atual</p>
                         <p className="text-lg font-bold text-gray-900 leading-none">
                           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.price)}
                         </p>
                       </div>
                     </div>
                     {isAdmin && (
-                      <div className="text-right">
+                      <div className="flex flex-col justify-end items-end">
                         <p className="text-xs text-gray-500 mb-1">Lucro Est.</p>
                         <p className="text-sm font-bold text-emerald-600 flex items-center justify-end">
                           <TrendingUp className="w-3 h-3 mr-1" />

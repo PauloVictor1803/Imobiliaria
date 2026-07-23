@@ -1,5 +1,5 @@
 {
-  "name": "Custom Real Estate Dashboard",
+  "name": "Imobiliária",
   "description": "Painel de controle imobiliário com mapa interativo.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

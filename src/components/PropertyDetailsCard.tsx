@@ -390,27 +390,27 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                 className={`grid grid-cols-2 ${isExpanded ? "md:grid-cols-4" : ""} gap-4 mb-6 border-b border-gray-200 pb-6`}
               >
                 <div className="col-span-2 sm:col-span-1">
-                  <div className="flex gap-4 items-end flex-wrap">
+                  <div className="grid grid-cols-2 gap-4">
                     {property.oldPrice &&
                       property.oldPrice > property.price && (
                         <div>
                           <p className="text-xs text-gray-500 font-medium mb-1">
                             Antes:
                           </p>
-                          <span
+                          <p
                             className="text-sm font-medium text-gray-500 line-through truncate"
                             title={`de ${formatCurrency(property.oldPrice)}`}
                           >
                             {formatCurrency(property.oldPrice)}
-                          </span>
+                          </p>
                         </div>
                       )}
-                    <div>
+                    <div className={(!property.oldPrice || property.oldPrice <= property.price) ? "col-span-2" : ""}>
                       <p className="text-xs text-gray-500 font-medium mb-1">
                         Preço Atual:
                       </p>
                       <p
-                        className="text-sm font-bold text-gray-900 truncate leading-none"
+                        className="text-sm font-bold text-gray-900 truncate"
                         title={formatCurrency(property.price)}
                       >
                         {formatCurrency(property.price)}
@@ -419,13 +419,13 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 font-medium">Área:</p>
+                  <p className="text-xs text-gray-500 font-medium mb-1">Área:</p>
                   <p className="text-sm font-bold text-gray-900">
                     {property.area}m²
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 font-medium">Estilo:</p>
+                  <p className="text-xs text-gray-500 font-medium mb-1">Estilo:</p>
                   <p
                     className="text-sm font-bold text-gray-900 truncate"
                     title={property.style}
@@ -437,7 +437,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                   <div className="flex items-center gap-2">
                     <BedDouble className="w-4 h-4 text-gray-500" />
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">
+                      <p className="text-xs text-gray-500 font-medium mb-1">
                         Quartos
                       </p>
                       <p className="text-sm font-bold text-gray-900">
@@ -450,7 +450,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                   <div className="flex items-center gap-2">
                     <Bath className="w-4 h-4 text-gray-500" />
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">
+                      <p className="text-xs text-gray-500 font-medium mb-1">
                         Banheiros
                       </p>
                       <p className="text-sm font-bold text-gray-900">
@@ -463,7 +463,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                   <div className="flex items-center gap-2">
                     <Car className="w-4 h-4 text-gray-500" />
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">Vagas</p>
+                      <p className="text-xs text-gray-500 font-medium mb-1">Vagas</p>
                       <p className="text-sm font-bold text-gray-900">
                         {property.garages}
                       </p>
@@ -474,7 +474,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                   <div className="flex items-center gap-2">
                     <ChefHat className="w-4 h-4 text-gray-500" />
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">
+                      <p className="text-xs text-gray-500 font-medium mb-1">
                         Cozinhas
                       </p>
                       <p className="text-sm font-bold text-gray-900">
@@ -487,7 +487,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                   <div className="flex items-center gap-2">
                     <Sofa className="w-4 h-4 text-gray-500" />
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">Salas</p>
+                      <p className="text-xs text-gray-500 font-medium mb-1">Salas</p>
                       <p className="text-sm font-bold text-gray-900">
                         {property.livingRooms}
                       </p>
@@ -498,7 +498,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                   <div className="flex items-center gap-2">
                     <TreePine className="w-4 h-4 text-gray-500" />
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">
+                      <p className="text-xs text-gray-500 font-medium mb-1">
                         Área de Lazer
                       </p>
                       <p className="text-sm font-bold text-gray-900">
