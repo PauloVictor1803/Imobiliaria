@@ -17,8 +17,8 @@ interface MapAreaProps {
 // Custom icon creator function
 const createCustomIcon = (property: Property, isSelected: boolean) => {
   const isSold = property.isSold;
-  const borderColor = isSold ? (isSelected ? 'border-red-600' : 'border-red-400') : (isSelected ? 'border-blue-500' : 'border-white');
-  const arrowColor = isSold ? (isSelected ? 'border-t-red-600' : 'border-t-red-400') : (isSelected ? 'border-t-blue-500' : 'border-t-white');
+  const borderColor = isSold ? (isSelected ? 'border-red-600' : 'border-red-400') : (isSelected ? 'border-blue-600' : 'border-blue-500');
+  const arrowColor = isSold ? (isSelected ? 'border-t-red-600' : 'border-t-red-400') : (isSelected ? 'border-t-blue-600' : 'border-t-blue-500');
 
   return L.divIcon({
     className: 'custom-marker-icon z-50',
@@ -27,7 +27,7 @@ const createCustomIcon = (property: Property, isSelected: boolean) => {
         <div class="absolute inset-0 bg-white rounded-full shadow-md border-4 ${borderColor} flex items-center justify-center overflow-hidden z-10">
           <img src="${isYouTubeUrl(property.image) ? getYouTubeThumbnail(property.image) : property.image}" alt="${property.title}" class="w-full h-full object-cover ${isSold ? 'opacity-50 grayscale' : ''}" />
         </div>
-        ${isSold ? `<div class="absolute -top-1 -right-4 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full z-20 shadow-sm border border-white">VENDIDO</div>` : ''}
+        ${isSold ? `<div class="absolute -top-1 -right-4 bg-red-600 text-white text-[10px] font-bold px-2 whitespace-nowrap py-0.5 rounded-full z-20 shadow-sm border border-white">VENDIDO</div>` : ''}
         <div class="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[12px] ${arrowColor}"></div>
       </div>
     `,

@@ -234,7 +234,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
           })()}
           {property.isSold && (
             <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-              <span className="bg-red-600 text-white font-black text-3xl px-8 py-3 rounded-xl tracking-widest shadow-2xl border-4 border-white">
+              <span className="bg-red-600 text-white font-black text-2xl sm:text-3xl px-6 sm:px-8 py-2 sm:py-3 rounded-xl tracking-wider sm:tracking-widest shadow-2xl border-4 border-white">
                 VENDIDO
               </span>
             </div>
@@ -396,7 +396,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
             className={`p-6 animate-in fade-in ${isExpanded ? "max-w-3xl mx-auto w-full" : ""}`}
           >
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-gray-900 leading-tight">
+              <h2 className="text-lg font-bold text-gray-900 leading-snug">
                 {property.title}
               </h2>
               {(property.address || property.neighborhood) && (
@@ -433,7 +433,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                             Antes:
                           </p>
                           <p
-                            className="text-sm font-medium text-gray-500 line-through truncate"
+                            className="text-sm font-medium text-gray-500 line-through break-words line-clamp-2"
                             title={`de ${formatCurrency(property.oldPrice)}`}
                           >
                             {formatCurrency(property.oldPrice)}
@@ -445,7 +445,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                         Preço Atual:
                       </p>
                       <p
-                        className="text-sm font-bold text-gray-900 truncate"
+                        className="text-sm font-bold text-gray-900 break-words line-clamp-2"
                         title={formatCurrency(property.price)}
                       >
                         {formatCurrency(property.price)}
@@ -462,7 +462,7 @@ export const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({
                 <div>
                   <p className="text-xs text-gray-500 font-medium mb-1">Estilo:</p>
                   <p
-                    className="text-sm font-bold text-gray-900 truncate"
+                    className="text-sm font-bold text-gray-900 break-words line-clamp-2"
                     title={property.style}
                   >
                     {property.style}

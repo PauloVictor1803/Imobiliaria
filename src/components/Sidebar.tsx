@@ -47,7 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Home className="w-10 h-10 text-blue-900" />
         </div>
         
-        <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-4 space-y-2">
           <button
             onClick={() => { setActiveTab('dashboard'); onClose?.(); }}
             className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
@@ -89,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {isAdmin && (
             <>
               <div className="pt-6 pb-2">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4">
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide px-4">
                   Adicionar Novo Imóvel
                 </p>
               </div>

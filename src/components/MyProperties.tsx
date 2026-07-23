@@ -30,7 +30,7 @@ const PropertyImageSlider: React.FC<{ property: Property, onSelect: () => void }
       )}
       {property.isSold && (
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <span className="bg-red-600 text-white font-black text-2xl px-6 py-2 rounded-lg tracking-widest shadow-lg border-2 border-white">
+          <span className="bg-red-600 text-white font-black text-xl sm:text-2xl px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg tracking-wider sm:tracking-widest shadow-lg border-2 border-white">
             VENDIDO
           </span>
         </div>
@@ -269,15 +269,15 @@ export const MyProperties: React.FC<MyPropertiesProps> = ({
                   }}
                 >
                   <div className="flex justify-between items-start mb-1">
-                    <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{property.title}</h3>
-                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded ml-2 whitespace-nowrap">
+                    <h3 className="flex-1 min-w-0 text-lg font-bold text-gray-900 line-clamp-2 leading-snug">{property.title}</h3>
+                    <span className="shrink-0 bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded ml-2 whitespace-nowrap">
                       {property.style}
                     </span>
                   </div>
                   {(property.address || property.neighborhood) && (
-                    <div className="flex items-start gap-1 text-xs text-gray-500 mb-2 truncate">
+                    <div className="flex items-start gap-1 text-xs text-gray-500 mb-2 break-words">
                       <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                      <span className="truncate">
+                      <span className="break-words">
                         {property.address}
                         {property.addressNumber ? `, ${property.addressNumber}` : ''}
                         {property.neighborhood ? ` - ${property.neighborhood}` : ''}
@@ -343,7 +343,7 @@ export const MyProperties: React.FC<MyPropertiesProps> = ({
                       )}
                       <div>
                         <p className="text-xs text-gray-500 mb-0.5">Preço Atual</p>
-                        <p className="text-lg font-bold text-gray-900 leading-none">
+                        <p className="text-lg font-bold text-gray-900 leading-snug">
                           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(property.price)}
                         </p>
                       </div>

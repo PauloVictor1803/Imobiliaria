@@ -11,7 +11,7 @@ export const getYouTubeId = (url: string) => {
 export const getYouTubeThumbnail = (url: string) => {
   const id = getYouTubeId(url);
   if (id) {
-    return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
   }
   return url;
 };
