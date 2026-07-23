@@ -13,6 +13,29 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      const target = e.target as HTMLElement;
+      if (target.tagName.toLowerCase() === 'button') return;
+      
+      e.preventDefault();
+      
+      const form = target.closest('form');
+      if (!form) return;
+      
+      const focusableElements = Array.from(
+        form.querySelectorAll<HTMLElement>(
+          'input:not([type="hidden"]):not([disabled]), button[type="submit"]:not([disabled])'
+        )
+      );
+      
+      const index = focusableElements.indexOf(target);
+      if (index > -1 && index < focusableElements.length - 1) {
+        focusableElements[index + 1].focus();
+      }
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -62,7 +85,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin, onClose }) => {
             Gestão de Imóveis
           </p>
 
-          <form className="space-y-6" onSubmit={handleLogin}>
+          <form className="space-y-6" onSubmit={handleLogin} onKeyDown={handleKeyDown}>
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
                 {error}

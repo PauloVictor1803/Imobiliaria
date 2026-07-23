@@ -30,12 +30,27 @@ const MiniMapUpdater = ({ lat, lng }: { lat: number, lng: number }) => {
 };
 
 const LocationPicker = ({ position, setPosition }: { position: [number, number], setPosition: (lat: number, lng: number) => void }) => {
+  const markerRef = React.useRef<L.Marker>(null);
   useMapEvents({
     click(e) {
       setPosition(e.latlng.lat, e.latlng.lng);
     },
   });
-  return <Marker position={position} />;
+  
+  const eventHandlers = React.useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          const latlng = marker.getLatLng();
+          setPosition(latlng.lat, latlng.lng);
+        }
+      },
+    }),
+    [setPosition]
+  );
+
+  return <Marker draggable={true} eventHandlers={eventHandlers} position={position} ref={markerRef} />;
 };
 
 export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, onClose, onSave }) => {
@@ -64,6 +79,15 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
     return new Intl.NumberFormat('pt-BR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
+    }).format(numberValue);
+  };
+
+  const formatArea = (value: number | string | undefined) => {
+    if (value === undefined || value === null || value === '') return '';
+    const numberValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numberValue)) return '';
+    return new Intl.NumberFormat('pt-BR', {
+      maximumFractionDigits: 0
     }).format(numberValue);
   };
 
@@ -98,7 +122,8 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
     setShowResults(true);
     try {
       // Use Photon API which is much better for natural language and partial addresses in Brazil
-      const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`);
+      const searchQuery = query.toLowerCase().includes('montes claros') ? query : `${query}, Montes Claros, MG`;
+      const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(searchQuery)}&limit=5`);
       const data = await response.json();
       
       if (data && data.features) {
@@ -180,6 +205,17 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
       return;
     }
     const numericValue = parseInt(digits, 10) / 100;
+    setFormData(prev => ({ ...prev, [name]: numericValue }));
+  };
+
+  const handleAreaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const digits = value.replace(/\D/g, '');
+    if (!digits) {
+      setFormData(prev => ({ ...prev, [name]: 0 }));
+      return;
+    }
+    const numericValue = parseInt(digits, 10);
     setFormData(prev => ({ ...prev, [name]: numericValue }));
   };
 
@@ -288,6 +324,30 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
     setDraggedImageIndex(null);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      const target = e.target as HTMLElement;
+      if (target.tagName.toLowerCase() === 'textarea') return;
+      if (target.tagName.toLowerCase() === 'button') return;
+      
+      e.preventDefault();
+      
+      const form = target.closest('form');
+      if (!form) return;
+      
+      const focusableElements = Array.from(
+        form.querySelectorAll<HTMLElement>(
+          'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled]), button[type="submit"]:not([disabled])'
+        )
+      );
+      
+      const index = focusableElements.indexOf(target);
+      if (index > -1 && index < focusableElements.length - 1) {
+        focusableElements[index + 1].focus();
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
@@ -321,12 +381,12 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex-1 space-y-6">
+        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 overflow-y-auto flex-1 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Column */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Título</label>
                 <input 
                   type="text" 
                   name="title" 
@@ -338,7 +398,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Descrição</label>
                 <textarea 
                   name="description" 
                   value={formData.description} 
@@ -351,7 +411,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Preço Atual</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Preço Atual</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <span className="text-gray-500 sm:text-sm">R$</span>
@@ -367,7 +427,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Preço Antigo (Opcional)</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Preço Antigo (Opcional)</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <span className="text-gray-500 sm:text-sm">R$</span>
@@ -382,7 +442,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor de Compra</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Valor de Compra</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <span className="text-gray-500 sm:text-sm">R$</span>
@@ -401,7 +461,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estilo (ex: Moderno)</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Estilo (ex: Moderno)</label>
                   <input 
                     type="text" 
                     name="style" 
@@ -412,12 +472,12 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Área (m²)</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Área (m²)</label>
                   <input 
-                    type="number" 
+                    type="text" 
                     name="area" 
-                    value={formData.area || ''} 
-                    onChange={handleChange}
+                    value={formatArea(formData.area)} 
+                    onChange={handleAreaChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     required
                   />
@@ -425,7 +485,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
               </div>
               
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Localização (Endereço, Coordenadas ou Link Maps)</label>
+                <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Localização (Endereço, Coordenadas ou Link Maps)</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Search className="text-gray-400 w-4 h-4" />
@@ -471,7 +531,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                 )}
                 
                 <p className="text-xs text-gray-500 mt-1 mb-3">
-                  Digite para buscar, cole o link do Google Maps, ou clique no mapa abaixo para ajustar.
+                  Digite para buscar, cole o link do Google Maps, ou arraste o pino no mapa para ajustar a localização exata.
                 </p>
                 <div className="h-48 w-full rounded-lg overflow-hidden border border-gray-300 relative z-0">
                   <MapContainer 
@@ -494,7 +554,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Endereço (Rua)</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Endereço (Rua)</label>
                   <input 
                     type="text" 
                     name="address" 
@@ -505,7 +565,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Número</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Número</label>
                   <input 
                     type="text" 
                     name="addressNumber" 
@@ -516,7 +576,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   />
                 </div>
                 <div className="md:col-span-3">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Bairro</label>
                   <input 
                     type="text" 
                     name="neighborhood" 
@@ -535,7 +595,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Quartos</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Quartos</label>
                   <input 
                     type="number" 
                     name="bedrooms" 
@@ -546,7 +606,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Banheiros</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Banheiros</label>
                   <input 
                     type="number" 
                     name="bathrooms" 
@@ -557,7 +617,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Garagens (vagas)</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Garagens (vagas)</label>
                   <input 
                     type="number" 
                     name="garages" 
@@ -568,7 +628,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cozinhas</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Cozinhas</label>
                   <input 
                     type="number" 
                     name="kitchens" 
@@ -579,7 +639,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Salas</label>
+                  <label className="block text-xs sm:text-sm font-medium truncate text-gray-700 mb-1">Salas</label>
                   <input 
                     type="number" 
                     name="livingRooms" 
