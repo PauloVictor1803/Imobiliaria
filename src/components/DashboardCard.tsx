@@ -40,7 +40,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({ properties, setAct
     { name: 'Disponíveis', value: availableCount, color: '#3b82f6' } // blue-500
   ];
   return (
-    <div className="absolute inset-0 z-40 bg-gray-50/50 pt-20 pb-8 px-4 md:p-8 overflow-y-auto">
+    <div className="absolute inset-0 z-40 bg-gray-50 pt-20 pb-8 px-4 md:p-8 overflow-y-auto">
       <div className="max-w-6xl mx-auto pb-12">
         <div className="flex items-center gap-4 mb-2 md:pl-0 pl-16">
           <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3 tracking-tight">
