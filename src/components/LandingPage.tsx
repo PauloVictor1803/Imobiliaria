@@ -1,5 +1,6 @@
 import React from 'react';
 import { Instagram, Home, MessageCircle, MapPin, Award, Shield } from 'lucide-react';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 interface LandingPageProps {
   onEnter: () => void;
@@ -99,8 +100,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
             onClick={handleWhatsApp}
             className="group flex flex-col items-center justify-center p-8 bg-white text-gray-800 rounded-2xl shadow-sm hover:border-green-500 transition-all border border-gray-200 hover:shadow-md h-full"
           >
-            <div className="mb-4 group-hover:scale-110 transition-transform">
-              <img src="/whatsapp.png" alt="WhatsApp" className="w-16 h-16 object-contain drop-shadow-sm" />
+            <div className="bg-green-500 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform">
+              <WhatsAppIcon className="w-8 h-8 text-white" />
             </div>
             <span className="font-bold text-xl mb-1">WhatsApp</span>
             <span className="text-gray-500 text-sm font-medium">+55 38 8407-9000</span>
