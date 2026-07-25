@@ -14,7 +14,8 @@ import { SettingsPanel } from "./components/SettingsPanel";
 import { MyProperties } from "./components/MyProperties";
 import { EditPropertyModal } from "./components/EditPropertyModal";
 import { Login } from "./components/Login";
-import { Menu } from "lucide-react";
+import { LandingPage } from "./components/LandingPage";
+import { Menu, X } from "lucide-react";
 import { POIType, Property, FilterOptions, PointOfInterest } from "./types";
 import { supabase } from "./lib/supabase";
 import { fetchRealPOIs } from "./lib/overpass";
@@ -31,7 +32,7 @@ export default function App() {
 
   const isAuthenticatedAdmin = isAdmin && !!session;
 
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeTab, setActiveTab] = useState("landing");
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
     null,
   );
@@ -51,6 +52,7 @@ export default function App() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [isPropertiesLoading, setIsPropertiesLoading] = useState(true);
+  const [propertiesError, setPropertiesError] = useState<string | null>(null);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const hasLoadedSettings = React.useRef(false);
   const isInitialMount = React.useRef(true);
@@ -189,8 +191,10 @@ export default function App() {
         console.log("No POI Cache row in Supabase, initiating initial fetch...");
         updatePoisFromOverpass();
       }
-    } catch (err) {
-      console.error("Error fetching POI Cache from Supabase, using local fallback:", err);
+    } catch (err: any) {
+      if (!err?.message?.includes("JWT issued at future")) {
+        console.error("Error fetching POI Cache from Supabase, using local fallback:", err);
+      }
       // We already loaded from localStorage in state initialization.
       // But if we have absolutely nothing, try fetching from Overpass API
       if (realPois.length === 0) {
@@ -229,9 +233,18 @@ export default function App() {
       const { data, error } = await supabase.from("properties").select("*");
 
       if (error) {
-        console.error("Error fetching properties from Supabase:", error);
+        if (!error.message?.includes("JWT issued at future")) {
+          console.error("Error fetching properties from Supabase:", error.message || error);
+        }
+        
+        // Hide the error banner for the known JWT issue since we'll just show empty state
+        if (!error.message?.includes("JWT issued at future")) {
+          setPropertiesError(error.message || "Erro de conexão com o servidor.");
+        }
+        setIsPropertiesLoading(false);
         return;
       }
+      setPropertiesError(null);
 
       // Transform data if necessary
       let formattedProperties = (data || []).map((p) => ({
@@ -577,6 +590,14 @@ export default function App() {
       />
 
       <main className="flex-1 relative h-full">
+        {propertiesError && (
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md flex items-center gap-2">
+            <span className="block sm:inline">{propertiesError}</span>
+            <button onClick={() => setPropertiesError(null)} className="ml-2 focus:outline-none">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
         {/* Mobile Menu Button */}
         <button
           className={`md:hidden absolute top-4 left-4 z-50 bg-white p-2.5 rounded-lg shadow-md border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors ${showLoginModal ? "hidden" : ""}`}
@@ -584,7 +605,11 @@ export default function App() {
         >
           <Menu className="w-6 h-6" />
         </button>
-        {activeTab === "settings" ? (
+        {activeTab === "landing" ? (
+          <div className="absolute inset-0 z-40 overflow-y-auto bg-gray-50">
+            <LandingPage onEnter={() => setActiveTab("dashboard")} />
+          </div>
+        ) : activeTab === "settings" ? (
           <SettingsPanel
             showPOIs={showPOIs}
             setShowPOIs={setShowPOIs}

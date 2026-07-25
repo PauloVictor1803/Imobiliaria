@@ -87,7 +87,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
     const numberValue = typeof value === 'string' ? parseFloat(value) : value;
     if (isNaN(numberValue)) return '';
     return new Intl.NumberFormat('pt-BR', {
-      maximumFractionDigits: 0
+      minimumFractionDigits: 2, maximumFractionDigits: 2
     }).format(numberValue);
   };
 
@@ -215,7 +215,7 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
       setFormData(prev => ({ ...prev, [name]: 0 }));
       return;
     }
-    const numericValue = parseInt(digits, 10);
+    const numericValue = parseInt(digits, 10) / 100;
     setFormData(prev => ({ ...prev, [name]: numericValue }));
   };
 
@@ -535,7 +535,10 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                 </p>
                 <div className="h-48 w-full rounded-lg overflow-hidden border border-gray-300 relative z-0">
                   <MapContainer 
-                    center={[formData.lat, formData.lng]} 
+                    center={[
+                      !isNaN(formData.lat) && formData.lat != null ? formData.lat : -16.735,
+                      !isNaN(formData.lng) && formData.lng != null ? formData.lng : -43.861
+                    ]} 
                     zoom={15} 
                     style={{ height: '100%', width: '100%' }}
                   >
@@ -543,9 +546,15 @@ export const EditPropertyModal: React.FC<EditPropertyModalProps> = ({ property, 
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    <MiniMapUpdater lat={formData.lat} lng={formData.lng} />
+                    <MiniMapUpdater 
+                      lat={!isNaN(formData.lat) && formData.lat != null ? formData.lat : -16.735} 
+                      lng={!isNaN(formData.lng) && formData.lng != null ? formData.lng : -43.861} 
+                    />
                     <LocationPicker 
-                      position={[formData.lat, formData.lng]} 
+                      position={[
+                        !isNaN(formData.lat) && formData.lat != null ? formData.lat : -16.735,
+                        !isNaN(formData.lng) && formData.lng != null ? formData.lng : -43.861
+                      ]} 
                       setPosition={handleMapClick} 
                     />
                   </MapContainer>

@@ -249,7 +249,13 @@ const POIMarkers: React.FC<{ pois: PointOfInterest[] }> = ({ pois }) => {
 
   if (!bounds) return null;
 
-  const renderablePOIs = pois.filter(poi => bounds.contains([poi.lat, poi.lng]));
+  const renderablePOIs = pois.filter(poi => 
+    poi.lat != null && 
+    poi.lng != null && 
+    !isNaN(poi.lat) && 
+    !isNaN(poi.lng) && 
+    bounds.contains([poi.lat, poi.lng])
+  );
 
   return (
     <>
@@ -303,7 +309,7 @@ export const MapArea: React.FC<MapAreaProps> = ({
 
         <POIMarkers pois={visiblePOIs} />
 
-        {React.useMemo(() => properties.map(property => {
+        {React.useMemo(() => properties.filter(p => p.lat != null && p.lng != null && !isNaN(p.lat) && !isNaN(p.lng)).map(property => {
           const isSelected = property.id === selectedPropertyId;
           return (
             <React.Fragment key={property.id}>
@@ -318,7 +324,7 @@ export const MapArea: React.FC<MapAreaProps> = ({
           );
         }), [properties, selectedPropertyId, onPropertySelect])}
 
-        {selectedProperty && !properties.find(p => p.id === selectedProperty.id) && (
+        {selectedProperty && !properties.find(p => p.id === selectedProperty.id) && selectedProperty.lat != null && selectedProperty.lng != null && !isNaN(selectedProperty.lat) && !isNaN(selectedProperty.lng) && (
           <Marker
             key={`selected-${selectedProperty.id}`}
             position={[selectedProperty.lat, selectedProperty.lng]}

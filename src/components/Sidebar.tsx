@@ -49,6 +49,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         
         <nav className="flex-1 px-4 space-y-2">
           <button
+            onClick={() => { setActiveTab('landing'); onClose?.(); }}
+            className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === 'landing'
+                ? 'bg-blue-900 text-white'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <Home className="w-5 h-5 mr-3" />
+            Início
+          </button>
+
+          <button
             onClick={() => { setActiveTab('dashboard'); onClose?.(); }}
             className={`w-full flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
               activeTab === 'dashboard'

@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Property } from '../types';
-import { Home, TrendingUp, CheckCircle, DollarSign, Wallet, Building, Percent, BarChart3, PieChart, ArrowLeft } from 'lucide-react';
+import { Home, TrendingUp, CheckCircle, DollarSign, Wallet, Building, Percent, BarChart3, PieChart, ArrowLeft, HelpCircle, X } from 'lucide-react';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
 
 interface DashboardCardProps {
@@ -9,6 +9,7 @@ interface DashboardCardProps {
 }
 
 export const DashboardCard: React.FC<DashboardCardProps> = ({ properties, setActiveTab }) => {
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const totalProperties = properties.length;
   
   const soldProperties = properties.filter(p => p.isSold);
@@ -45,6 +46,13 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({ properties, setAct
           <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3 tracking-tight">
             <BarChart3 className="w-8 h-8 text-blue-600 hidden md:block" />
             Visão Geral de Vendas
+            <button 
+              onClick={() => setIsHelpModalOpen(true)}
+              className="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded-full hover:bg-blue-50"
+              title="Entenda as métricas"
+            >
+              <HelpCircle className="w-6 h-6" />
+            </button>
           </h1>
         </div>
         <p className="text-gray-500 mb-8 md:ml-11 md:pl-0 pl-16">
@@ -232,6 +240,120 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({ properties, setAct
           </div>
         </div>
       </div>
+
+      {isHelpModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm transition-all">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-blue-600" />
+                Entendendo as Métricas
+              </h2>
+              <button 
+                onClick={() => setIsHelpModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">Visão Geral</h3>
+                  <ul className="space-y-3">
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-gray-100 rounded-lg h-fit"><Building className="w-4 h-4 text-gray-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Total de Imóveis</p>
+                        <p className="text-gray-600 text-sm">A soma de todos os imóveis cadastrados no sistema, incluindo disponíveis e vendidos.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-emerald-100 rounded-lg h-fit"><CheckCircle className="w-4 h-4 text-emerald-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Vendidos</p>
+                        <p className="text-gray-600 text-sm">Quantidade de imóveis marcados como vendidos. O percentual indica a taxa de conversão em relação ao total.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-blue-100 rounded-lg h-fit"><Home className="w-4 h-4 text-blue-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Disponíveis</p>
+                        <p className="text-gray-600 text-sm">Imóveis em estoque, ainda disponíveis para venda.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-indigo-100 rounded-lg h-fit"><DollarSign className="w-4 h-4 text-indigo-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Ticket Médio</p>
+                        <p className="text-gray-600 text-sm">Calculado dividindo o <span className="font-semibold">VGV Realizado</span> pelo número de <span className="font-semibold">Imóveis Vendidos</span>. Representa o valor médio das suas vendas.</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">Performance Financeira</h3>
+                  <ul className="space-y-3">
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-gray-100 rounded-lg h-fit"><Wallet className="w-4 h-4 text-gray-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">VGV (Valor Geral de Vendas)</p>
+                        <p className="text-gray-600 text-sm">A soma do preço de venda de todos os imóveis (disponíveis + vendidos). É o potencial máximo de faturamento.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-gray-100 rounded-lg h-fit"><BarChart3 className="w-4 h-4 text-gray-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Custo Total Global</p>
+                        <p className="text-gray-600 text-sm">A soma do custo de aquisição/construção de todos os imóveis da carteira.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-emerald-100 rounded-lg h-fit"><CheckCircle className="w-4 h-4 text-emerald-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Total Realizado (Vendas)</p>
+                        <p className="text-gray-600 text-sm">O faturamento bruto já garantido, soma do preço de venda apenas dos imóveis <span className="font-semibold">vendidos</span>.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-emerald-100 rounded-lg h-fit"><TrendingUp className="w-4 h-4 text-emerald-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Lucro Realizado</p>
+                        <p className="text-gray-600 text-sm">Lucro garantido. Calculado subtraindo o custo dos imóveis vendidos do seu preço de venda final: <code className="bg-gray-100 px-1 py-0.5 rounded text-xs text-emerald-700">Preço Venda - Custo</code>.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-blue-100 rounded-lg h-fit"><Home className="w-4 h-4 text-blue-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Expectativa (Estoque)</p>
+                        <p className="text-gray-600 text-sm">Faturamento bruto projetado para o estoque atual (soma do preço de venda dos imóveis <span className="font-semibold">disponíveis</span>).</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="p-1.5 bg-blue-100 rounded-lg h-fit"><Percent className="w-4 h-4 text-blue-600" /></div>
+                      <div>
+                        <p className="font-bold text-gray-900">Lucro Projetado</p>
+                        <p className="text-gray-600 text-sm">Lucro esperado com a venda do estoque atual. Calculado subtraindo o custo dos imóveis disponíveis do seu preço de venda estipulado.</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-5 border-t border-gray-100 bg-gray-50 flex justify-end">
+              <button 
+                onClick={() => setIsHelpModalOpen(false)}
+                className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                Entendi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
